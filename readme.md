@@ -59,7 +59,7 @@ BenchmarkDecode-8                1677639               711.2 ns/op // Parse by s
 BenchmarkDecodeField-8           7735048               152.3 ns/op // Parse by key
 BenchmarkManualDecode-8         19119616                60.06 ns/op //  manual parsing
 
-BenchmarkJsonUnmarshalField-8              737768              1746 ns/op //json.Unmarshal - Unrelated, but added to compare.
+BenchmarkJsonUnmarshal-8              737768              1746 ns/op //json.Unmarshal - Unrelated, but added to compare.
 
 
 ```

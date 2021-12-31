@@ -86,7 +86,7 @@ func BenchmarkManualDecode(t *testing.B) {
 
 }
 
-func BenchmarkJsonUnmarshalField(t *testing.B) {
+func BenchmarkJsonUnmarshal(t *testing.B) {
 	u1 := user{
 		IsSuperUser: false,
 		RandomField: "random_value",
