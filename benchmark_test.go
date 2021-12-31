@@ -36,17 +36,17 @@ func BenchmarkDecodeField(t *testing.B) {
 	queryValues.Add("user_name", "ritwick")
 	queryValues.Add("height", "1.0322")
 
-	var isSuperUser bool
-	var userId int64
+	var isSuperUser bool = false
+	var userId int64 = 0
 	var userName string
-	var height float32
+	var height float32 = 0.1
 
 	for i := 0; i < t.N; i++ {
 		decoder := querydecoder.New(queryValues)
-		decoder.DecodeField("is_super_user", false, &isSuperUser)
-		decoder.DecodeField("user_id", 0, &userId)
-		decoder.DecodeField("user_name", false, &userName)
-		decoder.DecodeField("height", 0.1, &height)
+		decoder.DecodeField("is_super_user", &isSuperUser)
+		decoder.DecodeField("user_id", &userId)
+		decoder.DecodeField("user_name", &userName)
+		decoder.DecodeField("height", &height)
 	}
 
 }

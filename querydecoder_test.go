@@ -20,7 +20,7 @@ func TestDecodeField(t *testing.T) {
 	{ //test for pointer reciver
 
 		field := ""
-		err = querydecoder.New(queryValues).DecodeField("field", "", field)
+		err = querydecoder.New(queryValues).DecodeField("field", field)
 		if err == nil {
 			log.Panicln("should have error: Pointer error")
 		}
@@ -28,9 +28,9 @@ func TestDecodeField(t *testing.T) {
 	}
 
 	{ // Test for boolean
-		var isSuperUser bool
+		var isSuperUser bool = false
 
-		err = querydecoder.New(queryValues).DecodeField("is_super_user", false, &isSuperUser)
+		err = querydecoder.New(queryValues).DecodeField("is_super_user", &isSuperUser)
 		if err != nil {
 			log.Panicln("should not have errors", err)
 		}
@@ -43,7 +43,7 @@ func TestDecodeField(t *testing.T) {
 
 	{ // Test for int
 		var userId int64
-		err = querydecoder.New(queryValues).DecodeField("user_id", 0, &userId)
+		err = querydecoder.New(queryValues).DecodeField("user_id", &userId)
 		if err != nil {
 			log.Panicln("should not have errors", err)
 		}
@@ -54,7 +54,7 @@ func TestDecodeField(t *testing.T) {
 
 	{ // Test for string
 		var userName string
-		err = querydecoder.New(queryValues).DecodeField("user_name", "defaultStr", &userName)
+		err = querydecoder.New(queryValues).DecodeField("user_name", &userName)
 		if err != nil {
 			log.Panicln("should not have errors", err)
 		}
@@ -65,8 +65,8 @@ func TestDecodeField(t *testing.T) {
 
 	{
 		// Test for random field (default value test)
-		var randomField string
-		err = querydecoder.New(queryValues).DecodeField("random_str", "defaultStr", &randomField)
+		var randomField string = "defaultStr"
+		err = querydecoder.New(queryValues).DecodeField("random_str", &randomField)
 		if err != nil {
 			log.Panicln("should not have errors", err)
 		}
@@ -77,27 +77,50 @@ func TestDecodeField(t *testing.T) {
 
 }
 
-func TestDecodePointerField(t *testing.T) {
+func TestDecodePointer(t *testing.T) {
 
 	queryValues := url.Values{}
 	queryValues.Add("random_pointer", "123")
 
-	// var r int64 = 1
-	u1 := user{
-		RandomPointer: nil,
+	{
+		u1 := user{}
+		err := querydecoder.New(queryValues).Decode(&u1)
+		if err != nil {
+			log.Panicln("err should be nil", err)
+		}
+		if u1.RandomPointer == nil {
+			log.Panicln("RandomPointer is nil")
+		}
+		if *u1.RandomPointer != 123 {
+			log.Panicln("RandomPointer incorrect value")
+		}
 	}
 
-	err := querydecoder.New(queryValues).Decode(&u1)
+	{
+		var num *int32
+		err := querydecoder.New(queryValues).DecodeField("random_pointer", &num)
+		if err != nil {
+			log.Panicln("err should be nil", err)
+		}
 
-	if err != nil {
-		log.Panicln("err should be nil", err)
+		if num == nil {
+			log.Panicln("num is nil")
+		}
+		if *num != 123 {
+			log.Panicln("num incorrect value")
+		}
+
 	}
 
-	if u1.RandomPointer == nil {
-		log.Panicln("RandomPointer is nil")
-	}
-	if *u1.RandomPointer != 123 {
-		log.Panicln("RandomPointer incorrect value")
+	{
+		var num *int32
+		err := querydecoder.New(queryValues).DecodeField("random_pointer_4343", &num)
+		if err != nil {
+			log.Panicln("err should be nil", err)
+		}
+		if num != nil {
+			log.Panicln("num should be nil")
+		}
 	}
 
 }
