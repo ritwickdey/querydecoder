@@ -88,26 +88,23 @@ func parseAndSetValue(val string, rVal *reflect.Value) error {
 	switch rVal.Kind() {
 	case reflect.String:
 		rVal.SetString(val)
-		return nil
 	case reflect.Bool:
 		rVal.SetBool(strings.ToLower(val) == "true")
-		return nil
 	case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int64:
 		n, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
 			return err
 		}
 		rVal.SetInt(n)
-		return nil
 	case reflect.Float32, reflect.Float64:
-		n, err := strconv.ParseFloat(val, 64)
+		n, err := strconv.ParseFloat(val, rVal.Type().Bits())
 		if err != nil {
 			return err
 		}
 		rVal.SetFloat(n)
-		return err
 	default:
 		return errors.New("unknown type")
 	}
 
+	return nil
 }
