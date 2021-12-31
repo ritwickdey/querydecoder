@@ -13,8 +13,6 @@ type User struct {
 	UserID      int64  `query:"user_id"`
 }
 
-
-
 // Parse by struct tags
 func ServeHTTP(w http.ResponseWriter, r *http.Request) {
    
