@@ -15,10 +15,10 @@ type User struct {
 
 // Parse by struct tags
 func ServeHTTP(w http.ResponseWriter, r *http.Request) {
-   
-    // Decode full struct
+    
     u1 := User{}
     query := r.URL.Query()
+    // Decode into struct
     err := querydecoder.New(query).Decode(&u1)
    
     if err != nil {
