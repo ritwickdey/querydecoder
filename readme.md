@@ -1,7 +1,7 @@
 Optional query parameter decoder for Golang
 
 
-Example
+#### Example
 ```go
 import (
 	"github.com/ritwickdey/querydecoder"
@@ -46,18 +46,22 @@ func ServeHTTP2(w http.ResponseWriter, r *http.Request) {
 ```
 
 
-
-
-Benchmark
-```
-cpu: Intel(R) Core(TM) i5-8257U CPU @ 1.40GHz
-
-
-BenchmarkDecode-8                   1677639             711.2 ns/op // Parse by struct tags
-BenchmarkDecodeField-8              7735048             152.3 ns/op // Parse by key
-BenchmarkManualDecode-8            19119616             60.06 ns/op //  manual parsing
-
-BenchmarkJsonUnmarshal-8             737768              1746 ns/op //json.Unmarshal - Unrelated, but added to compare.
-
+#### Benchmark 
 
 ```
+goos: darwin
+goarch: arm64 (Mac M1 Chip)
+pkg: github.com/ritwickdey/querydecoder
+
+BenchmarkDecode-8                2019590                603.1 ns/op //Parse by struct tags
+BenchmarkDecodeField-8          10521158                113.1 ns/op //Parse by key
+BenchmarkManualDecode-8         25947067                46.74 ns/op //Manual parsing
+
+BenchmarkJsonUnmarshal-8          883681                 1413 ns/op //json.Unmarshal - Unrelated, but added to compare.
+
+
+```
+
+
+
+
