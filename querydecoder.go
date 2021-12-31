@@ -38,7 +38,6 @@ func (q *queryDecoder) Decode(target interface{}) error {
 	noOfFields := elemsType.NumField()
 
 	for i := 0; i < noOfFields; i++ {
-
 		queryKeyName := elemsType.Field(i).Tag.Get("query")
 		if queryKeyName == "" {
 			continue
@@ -50,12 +49,11 @@ func (q *queryDecoder) Decode(target interface{}) error {
 
 		fieldValue := elemsVal.Field(i)
 
-		val, err := parseValue(q.values.Get(queryKeyName), fieldValue.Kind())
+		err := parseAndSetValue(q.values.Get(queryKeyName), &fieldValue)
 		if err != nil {
 			return err
 		}
 
-		fieldValue.Set(reflect.ValueOf(val).Convert(fieldValue.Type()))
 	}
 
 	return nil
@@ -77,32 +75,39 @@ func (q *queryDecoder) DecodeField(key string, defaultValue interface{}, target 
 		return nil
 	}
 
-	value, err := parseValue(q.values.Get(key), rTargetElem.Kind())
+	err := parseAndSetValue(q.values.Get(key), &rTargetElem)
 
 	if err != nil {
 		return err
 	}
 
-	rTargetElem.Set(reflect.ValueOf(value).Convert(rTargetElem.Type()))
-
 	return nil
 }
 
-func parseValue(val string, kind reflect.Kind) (interface{}, error) {
-	switch kind {
+func parseAndSetValue(val string, rVal *reflect.Value) error {
+	switch rVal.Kind() {
 	case reflect.String:
-		return val, nil
+		rVal.SetString(val)
+		return nil
 	case reflect.Bool:
-		return strings.ToLower(val) == "true", nil
+		rVal.SetBool(strings.ToLower(val) == "true")
+		return nil
 	case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int64:
 		n, err := strconv.ParseInt(val, 10, 64)
-		return n, err
-
+		if err != nil {
+			return err
+		}
+		rVal.SetInt(n)
+		return nil
 	case reflect.Float32, reflect.Float64:
 		n, err := strconv.ParseFloat(val, 64)
-		return n, err
+		if err != nil {
+			return err
+		}
+		rVal.SetFloat(n)
+		return err
 	default:
-		return nil, errors.New("unknown type")
+		return errors.New("unknown type")
 	}
 
 }
