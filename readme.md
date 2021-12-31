@@ -34,8 +34,8 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func ServeHTTP2(w http.ResponseWriter, r *http.Request) {
   
     var isDog bool
-    // if `is_dog` query param is not there, it'll assign default value 
-    err := querydecoder.New(query).DecodeField("is_dog", true /* default value*/, &isDog)
+    err := querydecoder.New(query).DecodeField("is_dog", &isDog)
+    // if `is_dog` query param is not there, it'll not modity variable.
 
     if err != nil {
         panic(err)

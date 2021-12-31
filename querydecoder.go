@@ -10,7 +10,7 @@ import (
 
 type QueryDecoder interface {
 	Decode(target interface{}) error
-	DecodeField(key string, defaultValue interface{}, target interface{}) error
+	DecodeField(key string, target interface{}) error
 }
 
 type queryDecoder struct {
@@ -57,7 +57,7 @@ func (q *queryDecoder) Decode(target interface{}) error {
 
 }
 
-func (q *queryDecoder) DecodeField(key string, defaultValue interface{}, target interface{}) error {
+func (q *queryDecoder) DecodeField(key string, target interface{}) error {
 
 	rTarget := reflect.ValueOf(target)
 
@@ -68,7 +68,6 @@ func (q *queryDecoder) DecodeField(key string, defaultValue interface{}, target 
 	rTargetElem := rTarget.Elem()
 
 	if _, ok := q.values[key]; !ok {
-		rTargetElem.Set(reflect.ValueOf(defaultValue))
 		return nil
 	}
 
