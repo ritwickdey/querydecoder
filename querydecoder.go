@@ -25,20 +25,19 @@ func New(values url.Values) QueryDecoder {
 
 func (q *queryDecoder) Decode(target interface{}) error {
 
-	rVal := reflect.ValueOf(target)
-	if rVal.Kind() != reflect.Ptr || rVal.IsNil() {
+	rValPtr := reflect.ValueOf(target)
+	if rValPtr.Kind() != reflect.Ptr || rValPtr.IsNil() {
 		return errors.New("target should be pointer")
 	}
 
-	rType := reflect.TypeOf(target)
+	rElems := rValPtr.Elem()
+	rTyp := rElems.Type()
 
-	elemsVal := rVal.Elem()
-	elemsType := rType.Elem()
-
-	noOfFields := elemsType.NumField()
+	noOfFields := rElems.NumField()
 
 	for i := 0; i < noOfFields; i++ {
-		queryKeyName := elemsType.Field(i).Tag.Get("query")
+
+		queryKeyName := rTyp.Field(i).Tag.Get("query")
 		if queryKeyName == "" {
 			continue
 		}
@@ -47,9 +46,7 @@ func (q *queryDecoder) Decode(target interface{}) error {
 			continue
 		}
 
-		fieldValue := elemsVal.Field(i)
-
-		err := parseAndSetValue(q.values.Get(queryKeyName), &fieldValue)
+		err := parseAndSetValue(q.values.Get(queryKeyName), rElems.Field(i))
 		if err != nil {
 			return err
 		}
@@ -75,7 +72,7 @@ func (q *queryDecoder) DecodeField(key string, defaultValue interface{}, target 
 		return nil
 	}
 
-	err := parseAndSetValue(q.values.Get(key), &rTargetElem)
+	err := parseAndSetValue(q.values.Get(key), rTargetElem)
 
 	if err != nil {
 		return err
@@ -84,7 +81,7 @@ func (q *queryDecoder) DecodeField(key string, defaultValue interface{}, target 
 	return nil
 }
 
-func parseAndSetValue(val string, rVal *reflect.Value) error {
+func parseAndSetValue(val string, rVal reflect.Value) error {
 	switch rVal.Kind() {
 	case reflect.String:
 		rVal.SetString(val)
