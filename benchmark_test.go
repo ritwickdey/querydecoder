@@ -68,10 +68,12 @@ func BenchmarkManualDecode(t *testing.B) {
 		u1.IsSuperUser = queryValues.Get("is_super_user") == "true"
 
 		uIdStr := queryValues.Get("user_id")
-		u1.UserID, err = strconv.ParseInt(uIdStr, 16, 64)
+		uId, err := strconv.ParseInt(uIdStr, 10, 32)
 		if err != nil {
 			panic(err)
 		}
+
+		u1.UserID = int32(uId)
 
 		u1.UserName = queryValues.Get("user_name")
 

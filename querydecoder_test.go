@@ -77,6 +77,31 @@ func TestDecodeField(t *testing.T) {
 
 }
 
+func TestDecodePointerField(t *testing.T) {
+
+	queryValues := url.Values{}
+	queryValues.Add("random_pointer", "123")
+
+	// var r int64 = 1
+	u1 := user{
+		RandomPointer: nil,
+	}
+
+	err := querydecoder.New(queryValues).Decode(&u1)
+
+	if err != nil {
+		log.Panicln("err should be nil", err)
+	}
+
+	if u1.RandomPointer == nil {
+		log.Panicln("RandomPointer is nil")
+	}
+	if *u1.RandomPointer != 123 {
+		log.Panicln("RandomPointer incorrect value")
+	}
+
+}
+
 func TestDecode(t *testing.T) {
 	queryValues := url.Values{}
 	queryValues.Add("is_super_user", "true")
@@ -118,9 +143,10 @@ func TestDecode(t *testing.T) {
 }
 
 type user struct {
-	IsSuperUser bool    `query:"is_super_user"`
-	UserName    string  `query:"user_name"`
-	UserID      int64   `query:"user_id"`
-	Height      float32 `query:"height"`
-	RandomField string  `query:"random_field"`
+	IsSuperUser   bool    `query:"is_super_user"`
+	UserName      string  `query:"user_name"`
+	UserID        int32   `query:"user_id"`
+	Height        float32 `query:"height"`
+	RandomField   string  `query:"random_field"`
+	RandomPointer *int64  `query:"random_pointer"`
 }
