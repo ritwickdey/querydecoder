@@ -54,15 +54,10 @@ Beachmark
 ```
 cpu: Intel(R) Core(TM) i5-8257U CPU @ 1.40GHz
 
-// Parse by struct tags
-BenchmarkDecode-8   	 1629248	       742.5 ns/op	      40 B/op	       5 allocs/op
-
-// Parse by key
-BenchmarkDecodeField-8   	 7497049	       153.4 ns/op	       0 B/op	       0 allocs/op
-
-//  manual parsing
-BenchmarkManualDecode-8   	17626317	        60.22 ns/op	       0 B/op	       0 allocs/op
-
+cpu: Intel(R) Core(TM) i5-8257U CPU @ 1.40GHz
+BenchmarkDecode-8                1677639               711.2 ns/op // Parse by struct tags
+BenchmarkDecodeField-8           7735048               152.3 ns/op // Parse by key
+BenchmarkManualDecode-8         19119616                60.06 ns/op //  manual parsing
 
 
 ```

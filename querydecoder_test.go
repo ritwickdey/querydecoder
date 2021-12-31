@@ -185,7 +185,10 @@ func BenchmarkManualDecode(t *testing.B) {
 		u1.UserName = queryValues.Get("user_name")
 
 		heightStr := queryValues.Get("height")
-		f64, _ := strconv.ParseFloat(heightStr, 32)
+		f64, err := strconv.ParseFloat(heightStr, 32)
+		if err != nil {
+			panic(err)
+		}
 
 		u1.Height = float32(f64)
 	}
