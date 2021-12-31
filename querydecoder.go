@@ -99,6 +99,15 @@ func parseAndSetValue(val string, rVal reflect.Value) error {
 			return err
 		}
 		rVal.SetFloat(n)
+
+	case reflect.Ptr:
+		if rVal.IsNil() {
+			rVal.Set(reflect.New(rVal.Type().Elem()))
+		}
+		if err := parseAndSetValue(val, rVal.Elem()); err != nil {
+			return err
+		}
+
 	default:
 		return errors.New("unknown type")
 	}
