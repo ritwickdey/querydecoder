@@ -48,7 +48,7 @@ func ServeHTTP2(w http.ResponseWriter, r *http.Request) {
 
 
 
-Beachmark
+Benchmark
 ```
 cpu: Intel(R) Core(TM) i5-8257U CPU @ 1.40GHz
 
