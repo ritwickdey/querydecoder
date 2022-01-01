@@ -2,6 +2,7 @@ package querydecoder
 
 import (
 	"errors"
+	"log"
 	"net/url"
 	"reflect"
 	"strconv"
@@ -25,29 +26,29 @@ func New(values url.Values) QueryDecoder {
 
 func (q *queryDecoder) Decode(target interface{}) error {
 
-	rValPtr := reflect.ValueOf(target)
-	if rValPtr.Kind() != reflect.Ptr || rValPtr.IsNil() {
+	rv := reflect.ValueOf(target)
+	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		return errors.New("target should be pointer")
 	}
 
-	rElems := rValPtr.Elem()
-	rTyp := rElems.Type()
+	rvElems := rv.Elem()
 
-	noOfFields := rElems.NumField()
+	rTyp := rvElems.Type()
+	noOfFields := rvElems.NumField()
 
 	for i := 0; i < noOfFields; i++ {
 
-		queryKeyName := rTyp.Field(i).Tag.Get("query")
-		if queryKeyName == "" {
+		key := rTyp.Field(i).Tag.Get("query")
+
+		if key == "" {
 			continue
 		}
 
-		if _, ok := q.values[queryKeyName]; !ok {
+		if _, ok := q.values[key]; !ok {
 			continue
 		}
 
-		err := parseAndSetValue(q.values.Get(queryKeyName), rElems.Field(i))
-		if err != nil {
+		if err := parseAndSetValue(q.values.Get(key), rvElems.Field(i)); err != nil {
 			return err
 		}
 
@@ -59,56 +60,55 @@ func (q *queryDecoder) Decode(target interface{}) error {
 
 func (q *queryDecoder) DecodeField(key string, target interface{}) error {
 
-	rTarget := reflect.ValueOf(target)
+	rv := reflect.ValueOf(target)
 
-	if rTarget.Kind() != reflect.Ptr || rTarget.IsNil() {
+	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		return errors.New("target should be pointer")
 	}
 
-	rTargetElem := rTarget.Elem()
+	rvElems := rv.Elem()
 
 	if _, ok := q.values[key]; !ok {
 		return nil
 	}
 
-	err := parseAndSetValue(q.values.Get(key), rTargetElem)
-
-	if err != nil {
+	if err := parseAndSetValue(q.values.Get(key), rvElems); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func parseAndSetValue(val string, rVal reflect.Value) error {
-	switch rVal.Kind() {
+func parseAndSetValue(s string, rv reflect.Value) error {
+	switch rv.Kind() {
 	case reflect.String:
-		rVal.SetString(val)
+		rv.SetString(s)
 	case reflect.Bool:
-		rVal.SetBool(strings.ToLower(val) == "true")
+		rv.SetBool(strings.ToLower(s) == "true")
 	case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int64:
-		n, err := strconv.ParseInt(val, 10, 64)
+		n, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
 			return err
 		}
-		rVal.SetInt(n)
+		rv.SetInt(n)
 	case reflect.Float32, reflect.Float64:
-		n, err := strconv.ParseFloat(val, rVal.Type().Bits())
+		n, err := strconv.ParseFloat(s, rv.Type().Bits())
 		if err != nil {
 			return err
 		}
-		rVal.SetFloat(n)
+		rv.SetFloat(n)
 
 	case reflect.Ptr:
-		if rVal.IsNil() {
-			rVal.Set(reflect.New(rVal.Type().Elem()))
+		if rv.IsNil() {
+			rv.Set(reflect.New(rv.Type().Elem()))
 		}
-		if err := parseAndSetValue(val, rVal.Elem()); err != nil {
+		if err := parseAndSetValue(s, rv.Elem()); err != nil {
 			return err
 		}
 
 	default:
-		return errors.New("unknown type")
+		log.Println(rv.Kind().String(), "is not supported.")
+		return errors.New("unsupported type")
 	}
 
 	return nil
