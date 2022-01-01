@@ -1,3 +1,5 @@
+// Populate struct from optional query parameters using 'query' tag.
+// It can be used to populate value into primitive variable.
 package querydecoder
 
 import (
