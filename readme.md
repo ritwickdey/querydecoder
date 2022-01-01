@@ -1,4 +1,4 @@
-Optional query parameter decoder for Golang
+Go Package to populating struct from optional query parameters using 'query' tag.
 
 
 #### Example
