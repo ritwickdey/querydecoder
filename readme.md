@@ -1,4 +1,6 @@
-Go Package to populating struct from optional query parameters using 'query' tag.
+# querydecoder
+
+`querydecoder` is a Go Package to populating struct from optional query parameters using 'query' tag. This package can be used to populate value into primitive variable.
 
 
 #### Example
